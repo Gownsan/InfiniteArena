@@ -1,6 +1,7 @@
 # importing packages and functions
 from random import randint
 from dataclasses import dataclass
+from math import floor
 
 
 # defining classes
@@ -82,6 +83,12 @@ def create_combatant(chosen_origin, chosen_job):
     return combatant
 
 
+# defining function to get stat bonus from stat
+def mod(creature, stat):
+    '''returns the ability modifier '''
+    floor(getattr(creature.origin.stats, "DEX") / 2 - 5)
+
+
 combatant1 = create_combatant(knight, fighter)
 combatant2 = create_combatant(knight, fighter)
 
@@ -96,10 +103,11 @@ for i in range(1, iteration):
     combatant2.currentHP = combatant2.maxHP
 
     while combatant1.currentHP > 0 and combatant2.currentHP > 0:
-        combatant1.currentHP = combatant1.currentHP - randint(1, 8)
-        combatant2.currentHP = combatant2.currentHP - randint(1, 8)
-        # print("Combatant 1 has " + str(combatant1.currentHP) +
-        #      " HP left and Combatant 2 has " + str(combatant2.currentHP) + " HP left.")
+        attack = randint(1, 20) + floor(combatant1.origin.stats.DEX / 2 - 5) + 2
+        dodge = randint(1, 20) + floor(combatant2.origin.stats.AGI / 2 - 5) + 2 - combatant2.origin.encumbrance
+        if attack >= dodge:
+            combatant2.currentHP = combatant2.currentHP - randint(1, combatant1.origin.weapon.slash) + combatan
+
 
     if combatant2.currentHP <= 0 and combatant1.currentHP <= 0:
         double_kill = double_kill + 1
@@ -108,6 +116,6 @@ for i in range(1, iteration):
     else:
         combatant2_wins = combatant2_wins + 1
 
-print(combatant1_wins/iteration*100)
-print(combatant2_wins/iteration*100)
-print(double_kill/iteration*100)
+print(combatant1_wins / iteration * 100)
+print(combatant2_wins / iteration * 100)
+print(double_kill / iteration * 100)
