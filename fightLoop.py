@@ -65,6 +65,87 @@ knight = Origin(
     encumbrance=3
 )
 
+soldier = Origin(
+    name="soldier",
+    stats=Stats(14, 14, 12, 12, 10, 10),
+    block=DmgType(4, 4, 4, 4, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(3, 3, 3, 0, 1, 0, 0, 0, 0, 0),
+    dodge=1,
+    weapon=DmgType(8, 8, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=2
+)
+
+warrior = Origin(
+    name="warrior",
+    stats=Stats(16, 14, 12, 12, 10, 8),
+    block=DmgType(4, 4, 4, 4, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(2, 2, 2, 0, 0, 4, 0, 0, 0, 0),
+    dodge=1,
+    weapon=DmgType(8, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=2
+)
+
+thief = Origin(
+    name="thief",
+    stats=Stats(10, 16, 16, 8, 10, 12),
+    block=DmgType(4, 4, 4, 0, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(1, 1, 1, 0, 0, 0, 3, 0, 0, 0),
+    dodge=2,
+    weapon=DmgType(4, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=1
+)
+
+wanderer = Origin(
+    name="wanderer",
+    stats=Stats(12, 12, 14, 12, 12, 10),
+    block=DmgType(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(0, 0, 0, 0, 0, 2, 1, 0, 0, 0),
+    dodge=0,
+    weapon=DmgType(6, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=0
+)
+
+herald = Origin(
+    name="herald",
+    stats=Stats(11, 11, 12, 14, 14, 10),
+    block=DmgType(6, 6, 6, 0, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(3, 3, 3, 0, 1, 1, 0, 0, 1, 0),
+    dodge=1,
+    weapon=DmgType(0, 6, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=2
+)
+
+cleric = Origin(
+    name="cleric",
+    stats=Stats(12, 10, 10, 12, 16, 12),
+    block=DmgType(4, 4, 4, 4, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(0, 0, 0, 1, 0, 0, 1, 0, 1, 2),
+    dodge=1,
+    weapon=DmgType(0, 0, 6, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=0
+)
+
+sorcerer = Origin(
+    name="sorcerer",
+    stats=Stats(8, 14, 14, 8, 12, 16),
+    block=DmgType(4, 4, 4, 0, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(0, 0, 0, 3, 2, 1, 0, 0, 0, 0),
+    dodge=2,
+    weapon=DmgType(0, 0, 6, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=0
+)
+
+pyromancer = Origin(
+    name="pyromancer",
+    stats=Stats(12, 14, 10, 12, 10, 14),
+    block=DmgType(4, 4, 4, 4, 0, 0, 0, 0, 0, 0),
+    resist=DmgType(0, 0, 0, 0, 4, 0, 1, 0, 0, 1),
+    dodge=1,
+    weapon=DmgType(6, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+    encumbrance=0
+)
+
+
 # defining jobs
 fighter = Job(
     name="fighter",
