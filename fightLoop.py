@@ -147,9 +147,24 @@ pyromancer = Origin(
 
 
 # defining jobs
+barbarian = Job(
+    name="barbarian",
+    startHP=24
+)
+
 fighter = Job(
     name="fighter",
     startHP=21
+)
+
+monk = Job(
+    name="monk",
+    startHP=18
+)
+
+rogue = Job(
+    name="rogue",
+    startHP=18
 )
 
 
