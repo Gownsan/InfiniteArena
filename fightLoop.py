@@ -170,6 +170,7 @@ rogue = Job(
 
 # defining function to create combatants from combination of origin and job
 def create_combatant(chosen_origin, chosen_job):
+    """creates a combatant object from an origin and job"""
     combatant = Combatant(
         origin=chosen_origin,
         job=chosen_job,
@@ -181,23 +182,38 @@ def create_combatant(chosen_origin, chosen_job):
 
 # defining function to get stat bonus from stat
 def mod(creature, stat):
-    '''returns the ability modifier '''
-    floor(getattr(creature.origin.stats, "DEX") / 2 - 5)
+    """returns the ability modifier for the specified creature's stat"""
+    modifier = floor(getattr(creature.origin.stats, stat) / 2 - 5)
+    return modifier
 
 
+# creating combatants
 combatant1 = create_combatant(knight, fighter)
 combatant2 = create_combatant(knight, fighter)
 
+
+# initiating variables to store the outcomes
 combatant1_wins = 0
 combatant2_wins = 0
 double_kill = 0
+
+
+# specifying number of iterations
 iteration = 10000
 
+
+# let the games ...begin!
 for i in range(1, iteration):
-    # print(i)
+
+    # healing combatants to max hp
     combatant1.currentHP = combatant1.maxHP
     combatant2.currentHP = combatant2.maxHP
 
+    # roll initiative!
+    combatant1_initiative = randint(1, 20) + mod(combatant1, "AGI")
+    combatant2_initiative = randint(1, 20) + mod(combatant2, "AGI")
+
+    # as long as both live, the battle rages on...
     while combatant1.currentHP > 0 and combatant2.currentHP > 0:
         attack = randint(1, 20) + floor(combatant1.origin.stats.DEX / 2 - 5) + 2
         dodge = randint(1, 20) + floor(combatant2.origin.stats.AGI / 2 - 5) + 2 - combatant2.origin.encumbrance
