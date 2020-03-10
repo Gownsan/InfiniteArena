@@ -187,43 +187,64 @@ def mod(creature, stat):
     return modifier
 
 
-# creating combatants
+# defining function to roll initiative and determine starting character
+def initiative_roll(player0, player1):
+    """rolls initiative and returns the starting character (1 or 2)"""
+    # roll initiative!
+    player0_initiative = randint(1, 20) + mod(player0, "AGI") + getattr(player0.origin.stats, "AGI")/100
+    player1_initiative = randint(1, 20) + mod(player1, "AGI") + getattr(player1.origin.stats, "AGI")/100
+    # return starting character
+    if player0_initiative > player1_initiative:
+        return 0
+    elif player0_initiative < player1_initiative:
+        return 1
+    else:
+        return randint(0,1)
+
+
+# creating combatants and the roster of contenders
 combatant1 = create_combatant(knight, fighter)
 combatant2 = create_combatant(knight, fighter)
-
+pc = [combatant1, combatant2]
 
 # initiating variables to store the outcomes
 combatant1_wins = 0
 combatant2_wins = 0
 double_kill = 0
 
-
 # specifying number of iterations
-iteration = 10000
+iteration = 100000
 
 
 # let the games ...begin!
 for i in range(1, iteration):
 
     # healing combatants to max hp
-    combatant1.currentHP = combatant1.maxHP
-    combatant2.currentHP = combatant2.maxHP
+    pc[0].currentHP = pc[0].maxHP
+    pc[1].currentHP = pc[1].maxHP
 
     # roll initiative!
-    combatant1_initiative = randint(1, 20) + mod(combatant1, "AGI")
-    combatant2_initiative = randint(1, 20) + mod(combatant2, "AGI")
+    current_turn = initiative_roll(pc[0], pc[1])
 
     # as long as both live, the battle rages on...
-    while combatant1.currentHP > 0 and combatant2.currentHP > 0:
-        attack = randint(1, 20) + floor(combatant1.origin.stats.DEX / 2 - 5) + 2
-        dodge = randint(1, 20) + floor(combatant2.origin.stats.AGI / 2 - 5) + 2 - combatant2.origin.encumbrance
+    while pc[0].currentHP > 0 and combatant2.currentHP > 0:
+        # ...whose turn is it now?
+        active = current_turn
+        passive = abs(active - 1)
+        # active pc attacks!
+        attack = randint(1, 20) + mod(pc[active], "DEX")
+        # passive pc dodges...?
+        dodge = randint(1, 20) + mod(pc[passive], "AGI") + pc[passive].origin.dodge - pc[passive].origin.encumbrance
+        # if they didn't dodge, passive pc loses HP!
         if attack >= dodge:
-            combatant2.currentHP = combatant2.currentHP - randint(1, combatant1.origin.weapon.slash) + combatan
+            pc[passive].currentHP = pc[passive].currentHP - randint(1, pc[active].origin.weapon.slash) + mod(pc[active], "STR")
+        # end of active pc's turn
+        current_turn = abs(current_turn -1)
 
 
-    if combatant2.currentHP <= 0 and combatant1.currentHP <= 0:
+    if pc[1].currentHP <= 0 and pc[0].currentHP <= 0:
         double_kill = double_kill + 1
-    elif combatant2.currentHP <= 0:
+    elif pc[1].currentHP <= 0:
         combatant1_wins = combatant1_wins + 1
     else:
         combatant2_wins = combatant2_wins + 1
