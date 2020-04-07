@@ -225,6 +225,18 @@ def initiative_roll(player0, player1):
     else:
         return randint(0,1)
 
+# Defining a function that goes through all damage types
+def damage_type_iteration(combatant):
+    total_damage = max(vars(combatant.origin.weapon).values())
+#    total_damage = 0
+#    for damage_type in vars(combatant.origin.weapon).values():
+#         
+#
+#         if damage_type > 0:
+#            total_damage = randint(1, damage_type) + total_damage
+#
+    return total_damage
+
 # Initializing the 4x forLoop 
 individualCombos = len(listOfOrigins) * len(listOfJobs)
 combatant1Origins = []
@@ -255,7 +267,7 @@ for origin1 in listOfOrigins:
                 double_kill = 0
 
                 # specifying number of iterations
-                iteration = 10
+                iteration = 100
 
 
                 # let the games ...begin!
@@ -269,7 +281,7 @@ for origin1 in listOfOrigins:
                     current_turn = initiative_roll(pc[0], pc[1])
 
                     # as long as both live, the battle rages on...
-                    while pc[0].currentHP > 0 and combatant2.currentHP > 0:
+                    while pc[0].currentHP > 0 and pc[1].currentHP > 0:
                         # ...whose turn is it now?
                         active = current_turn
                         passive = abs(active - 1)
@@ -279,9 +291,8 @@ for origin1 in listOfOrigins:
                         dodge = randint(1, 20) + mod(pc[passive], "AGI") + pc[passive].origin.dodge - pc[passive].origin.encumbrance
                         # if they didn't dodge, passive pc loses HP!
                         if attack >= dodge:
-                            #TODO Buggy line to fix with Guillaume
-                            print(f"Bug occurs at {origin2.name} and {job2.name}")
-                            pc[passive].currentHP = pc[passive].currentHP - randint(1, pc[active].origin.weapon.slash) + mod(pc[active], "STR")
+                            pc[passive].currentHP = pc[passive].currentHP - damage_type_iteration(pc[active]) + mod(pc[active], "STR")
+                            #pc[passive].currentHP = pc[passive].currentHP - randint(1, pc[active].origin.weapon.slash) + mod(pc[active], "STR")
                         # end of active pc's turn
                         current_turn = abs(current_turn -1)
 
@@ -299,6 +310,6 @@ for origin1 in listOfOrigins:
                 #print(double_kill / iteration * 100)
                 
 
-        combatant1VictoryRates.append(combatant1_total_wins)
-        print(f"This was the {origin1.name} origin with a {listOfJobs.name} job...")
+        combatant1VictoryRates.append(combatant1_total_wins/(individualCombos*iteration))
+        print(f"This was the {origin1.name} origin with a {job1.name} job. The victory rate is {combatant1_total_wins/(individualCombos*iteration)}")
         comboNumber = comboNumber + 1
