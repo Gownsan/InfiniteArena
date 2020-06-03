@@ -1,0 +1,11 @@
+name,resist,encumbrance
+knight,5,3
+soldier,3,2
+warrior,2,2
+thief,1,1
+wanderer,0,0
+herald,3,2
+cleric,0,0
+sorcerer,0,0
+pyromancer,1,0
+deprived,0,0

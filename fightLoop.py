@@ -1,120 +1,88 @@
 # importing packages and functions
 from random import randint
-from dataclasses import dataclass
 from math import floor
+import pandas as pd
 
+# load origins
+origins = pd.read_csv("origins.csv")
 
-# defining classes
-@dataclass
-class Stats:
-    STR: int
-    DEX: int
-    AGI: int
-    VIT: int
-    SPR: int
-    MND: int
+# load jobs
+jobs = pd.read_csv("jobs.csv")
 
+# load weapons
+weapons = pd.read_csv("weapons.csv")
 
-@dataclass
-class DmgType:
-    slash: int
-    pierce: int
-    blunt: int
-    magic: int
-    fire: int
-    cold: int
-    toxic: int
-    bleed: int
-    lightning: int
-    dark: int
+# load armours
+armours = pd.read_csv("armours.csv")
 
-
-@dataclass
-class Origin:
-    name: str
-    stats: Stats
-    block: DmgType
-    resist: DmgType
-    dodge: int
-    weapon: DmgType
-    encumbrance: int
-
-
-@dataclass
-class Job:
-    name: str
-    startHP: int
-
-
-@dataclass
-class Combatant:
-    origin: Origin
-    job: Job
-    maxHP: int
-    currentHP: int
-
-
-# defining origins
-knight = Origin(
-    name="knight",
-    stats=Stats(14, 12, 8, 16, 10, 12),
-    block=DmgType(6, 6, 6, 0, 0, 0, 0, 0, 0, 0),
-    resist=DmgType(5, 5, 3, 0, 0, 0, 0, 0, 0, 0),
-    dodge=0,
-    weapon=DmgType(8, 8, 0, 0, 0, 0, 0, 0, 0, 0),
-    encumbrance=3
-)
-
-# defining jobs
-fighter = Job(
-    name="fighter",
-    startHP=21
-)
-
-
-# defining function to create combatants from combination of origin and job
-def create_combatant(chosen_origin, chosen_job):
-    combatant = Combatant(
-        origin=chosen_origin,
-        job=chosen_job,
-        maxHP=chosen_origin.stats.VIT + chosen_job.startHP,
-        currentHP=chosen_origin.stats.VIT + chosen_job.startHP
-    )
-    return combatant
+# load shields
+shields = pd.read_csv("shields.csv")
 
 
 # defining function to get stat bonus from stat
 def mod(creature, stat):
-    '''returns the ability modifier '''
-    floor(getattr(creature.origin.stats, "DEX") / 2 - 5)
+    """returns the ability modifier of a specified stat (string) for a creature"""
+    return floor(getattr(creature, stat) / 2 - 5)
 
 
-combatant1 = create_combatant(knight, fighter)
-combatant2 = create_combatant(knight, fighter)
+# defining function to create combatants from combination of origin and job
+def create_combatant(chosen_origin, chosen_job):
+    """creates a combatant that includes the info from origin and job"""
+    combatant = origins[origins.name==chosen_origin]
+    combatant.rename(columns={'name':'origin'}, inplace=True)
+    combatant['job'] = chosen_job
+    combatant['startHP'] = combatant.vit + jobs[jobs.name==chosen_job]['startHP'].iloc[0]
+    combatant['currentHP'] = combatant.startHP
+    if combatant.origin.iloc[0] == 'monk':
+        combatant['dodge'] = mod(combatant, 'agi') + mod(combatant, 'spr') + 2
+    else:
+        combatant['dodge'] = mod(combatant, 'agi') + shields[shields.name==combatant.shield.iloc[0]]['dodge'].iloc[0] - armours[armours.name==chosen_origin]['encumbrance'].iloc[0] + 2
+    combatant['damage'] = weapons[weapons.name==combatant.weapon_1.iloc[0]]['damage'].iloc[0]
+    return combatant
+
+
+combatant1 = create_combatant('knight', 'fighter')
+combatant2 = create_combatant('knight', 'fighter')
 
 combatant1_wins = 0
 combatant2_wins = 0
 double_kill = 0
-iteration = 10000
+iteration = 100
 
 for i in range(1, iteration):
     # print(i)
-    combatant1.currentHP = combatant1.maxHP
-    combatant2.currentHP = combatant2.maxHP
-
-    while combatant1.currentHP > 0 and combatant2.currentHP > 0:
-        attack = randint(1, 20) + floor(combatant1.origin.stats.DEX / 2 - 5) + 2
-        dodge = randint(1, 20) + floor(combatant2.origin.stats.AGI / 2 - 5) + 2 - combatant2.origin.encumbrance
+    combatant1.currentHP = combatant1.startHP
+    combatant2.currentHP = combatant2.startHP
+    # roll initiative
+    combatant1_initiative = randint(1, 20) + mod(combatant1, "agi") + randint(1, 9)/10
+    combatant2_initiative = randint(1, 20) + mod(combatant2, "agi") + randint(1, 9)/10
+    # determine turn order
+    if combatant1_initiative > combatant2_initiative:
+        player1 = combatant1
+        player2 = combatant2
+    else:
+        player1 = combatant2
+        player2 = combatant1
+    # begin combat!
+    while player1.currentHP.iloc[0] > 0 and player2.currentHP.iloc[0] > 0:
+        # player1's turn
+        attack = randint(1, 20) + mod(player1, "dex") + 2
+        dodge = randint(1, 20) + player2.dodge.iloc[0]
         if attack >= dodge:
-            combatant2.currentHP = combatant2.currentHP - randint(1, combatant1.origin.weapon.slash) + combatan
-
-
-    if combatant2.currentHP <= 0 and combatant1.currentHP <= 0:
+            player2.currentHP = player2.currentHP.iloc[0] - randint(1, player1.damage.iloc[0]) + mod(player1, "str")
+        # player2's turn
+        attack = randint(1, 20) + mod(player2, "dex") + 2
+        dodge = randint(1, 20) + player1.dodge.iloc[0]
+        if attack >= dodge:
+            player1.currentHP = player1.currentHP.iloc[0] - randint(1, player2.damage.iloc[0]) + mod(player2, "str")
+    # end combat and record results
+    if player2.currentHP <= 0 and player1.currentHP <= 0:
         double_kill = double_kill + 1
-    elif combatant2.currentHP <= 0:
+    elif player2.currentHP <= 0:
         combatant1_wins = combatant1_wins + 1
     else:
         combatant2_wins = combatant2_wins + 1
+
 
 print(combatant1_wins / iteration * 100)
 print(combatant2_wins / iteration * 100)
